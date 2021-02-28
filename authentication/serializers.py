@@ -1,0 +1,28 @@
+from .models import CustomUser
+from rest_framework import serializers
+from helpers.jwt_helper import JWTHelper
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = CustomUser(**validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
+
+class UserLoginSerializer(UserSerializer):
+    token = serializers.SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ('token',)
+
+    def get_token(self, user):
+        user = JWTHelper.encode_token(user)
+        return user
