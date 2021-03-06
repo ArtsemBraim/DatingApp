@@ -1,19 +1,24 @@
-from .models import CustomUser
-from rest_framework import serializers
 from helpers.jwt_helper import JWTHelper
+from profiles.models import Profile
+
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = CustomUser
-        fields = ('username', 'email', 'password', 'profile')
+        model = User
+        fields = ('username', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = CustomUser(**validated_data)
+        user = User(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
+        Profile.objects.create(user=user)
         return user
 
 

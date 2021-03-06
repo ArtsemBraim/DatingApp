@@ -1,30 +1,22 @@
-from .models import Profile
 from .serializers import ProfileDetailSerializer
 
-from django.http import Http404
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-
-
-# Create your views here.
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class ProfileDetailView(APIView):
 
-    def get_object(self, pk):
-        try:
-            return Profile.objects.get(pk=pk)
-        except Profile.DoesNotExist:
-            raise Http404
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk):
-        profile = self.get_object(pk)
+    def get(self, request):
+        profile = request.user.profile
         serializer = ProfileDetailSerializer(profile)
-        return serializer.data
+        return Response(serializer.data)
 
-    def put(self, request, pk):
-        profile = self.get_object(pk)
+    def put(self, request):
+        profile = request.user.profile
         serializer = ProfileDetailSerializer(profile, data=request.data)
         if serializer.is_valid():
             serializer.save()

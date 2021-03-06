@@ -1,12 +1,12 @@
+from profiles.models import Profile
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Create your models here.
-
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, username, email, subscription_type, password=None):
+    def create_user(self, username, email, subscription_type=0, password=None):
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -18,9 +18,11 @@ class CustomUserManager(BaseUserManager):
 
         user.set_password(password)
         user.save(using=self._db)
+        Profile.objects.create(user=user)
+
         return user
 
-    def create_superuser(self, username, email, subscription_type, password=None):
+    def create_superuser(self, username, email, subscription_type=2, password=None):
         user = self.create_user(
             username=username,
             email=self.normalize_email(email),
