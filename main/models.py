@@ -11,12 +11,12 @@ class Swipe(models.Model):
         ('D', 'Dislike')
     )
 
-    profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='your_swipes')
+    profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='swipes_upon_you')
     reaction = models.CharField(max_length=1, choices=REACTION_CHOICES)
-    reaction_datetime = models.DateTimeField(default=timezone.now())
+    reaction_datetime = models.DateTimeField(default=timezone.now)
 
 
 class Match(models.Model):
-    profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='your_matches')
+    profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches_upon_you')
