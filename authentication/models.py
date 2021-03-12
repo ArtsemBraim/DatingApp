@@ -35,16 +35,23 @@ class CustomUserManager(BaseUserManager):
         return user
 
 
+class Subscription(models.Model):
+
+    name = models.CharField(max_length=20)
+    is_inf_swipes = models.BooleanField()
+    swipe_count = models.IntegerField()
+    default_radius = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
 class CustomUser(AbstractUser):
-    SUBSCRIPTION_TYPE_CHOICES = [
-        (0, 'Basic'),
-        (1, 'VIP'),
-        (2, 'Premium')
-    ]
-
-    subscription_type = models.IntegerField(
-        choices=SUBSCRIPTION_TYPE_CHOICES,
-        default=0
-    )
-
+    subscription = models.ForeignKey(Subscription, on_delete=models.PROTECT)
     objects = CustomUserManager()
+
+
+class CustomRadius(models.Model):
+
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    radius = models.IntegerField()
