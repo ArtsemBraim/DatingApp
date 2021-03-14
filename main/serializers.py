@@ -19,5 +19,5 @@ class SwipeSerializer(serializers.ModelSerializer):
 
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Swipe
+        model = Match
         exclude = ['profile1']

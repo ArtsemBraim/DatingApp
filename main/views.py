@@ -26,7 +26,12 @@ class SwipeView(APIView):
 
     def post(self, request):
         serializer = SwipeSerializer(data=request.data)
+        profile = self.request.user.profile
+        if not Swipe.are_there_swipes_left(profile):
+            return Response({"message": "There are not swipes left"}, status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid():
-            serializer.save(profile1=self.request.user.profile)
+            swipe = serializer.save(profile1=profile)
+            if swipe.is_match():
+                Match.objects.create(profile1=swipe.profile1, profile2=swipe.profile2)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
